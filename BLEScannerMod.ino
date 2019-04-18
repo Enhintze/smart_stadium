@@ -236,7 +236,7 @@ void setup() {
   Serial.begin(115200);
   delay(5000);
   Serial.println("Scanning for BLE started.");
-  Particle.subscribe("argonToBeacon", myHandler); //ARGON SHOULD HAVE MATCHING EVENT STREAM NAME
+  Particle.subscribe("argonToBeacon1", myHandler); //ARGON SHOULD MATCH EVENT NAME. This event name is only for Beacon1. 
   
   ble.init();
 
