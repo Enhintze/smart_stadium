@@ -62,14 +62,7 @@ SYSTEM_MODE(SEMI_AUTOMATIC);
 #define BLE_SCAN_INTERVAL    0x0060 // 60 ms
 #define BLE_SCAN_WINDOW      0x0030 // 30 ms
 int distance1; int distance2; int distance3; int distance4; int smallestDistance;
-/*
- * Advertising Event Type:
- *     - (0x00)BLE_GAP_ADV_TYPE_ADV_IND          : Connectable undirected.
- *     - (0x01)BLE_GAP_ADV_TYPE_ADV_DIRECT_IND   : Connectable directed.
- *     - (0x02)BLE_GAP_ADV_TYPE_ADV_SCAN_IND     : Scannable undirected.
- *     - (0x03)BLE_GAP_ADV_TYPE_ADV_NONCONN_IND  : Non connectable undirected.
- *     - (0x04)BLE_GAP_ADV_TYPE_SCAN_RSP         : Scan response.
- */
+
 void reportCallback(advertisementReport_t *report) {
 uint8_t index;
 //  int* saveAdd; 
@@ -83,28 +76,29 @@ uint8_t index;
     address2 = report->peerAddr[1];
     address3 = report->peerAddr[2];
     address4 = report->peerAddr[3];
+
+    /*Find the addresses of all BLES and attach them to corresponding wearables. Note: Only Tag1 address is correct*/
     uint8_t tag1Compare1, tag1Compare2, tag1Compare3, tag1Compare4;
     tag1Compare1 = 253;
     tag1Compare2 = 202;
     tag1Compare3 = 84;
     tag1Compare4 = 176;
     uint8_t tag2Compare1, tag2Compare2, tag2Compare3, tag2Compare4;
-    tag1Compare1 = 220;
-    tag1Compare2 = 202;
-    tag1Compare3 = 241;
-    tag1Compare4 = 200;
+    tag2Compare1 = 220;
+    tag2Compare2 = 202;
+    tag2Compare3 = 241;
+    tag2Compare4 = 200;
     uint8_t tag3Compare1, tag3Compare2, tag3Compare3, tag3Compare4;
-    tag1Compare1 = 0;
-    tag1Compare2 = 0;
-    tag1Compare3 = 0;
-    tag1Compare4 = 0;
+    tag3Compare1 = 0;
+    tag3Compare2 = 0;
+    tag3Compare3 = 0;
+    tag3Compare4 = 0;
     uint8_t tag4Compare1, tag4Compare2, tag4Compare3, tag4Compare4;
-    tag1Compare1 = 0;
-    tag1Compare2 = 0;
-    tag1Compare3 = 0;
-    tag1Compare4 = 0;
+    tag4Compare1 = 0;
+    tag4Compare2 = 0;
+    tag4Compare3 = 0;
+    tag4Compare4 = 0;
    
-
     
   if ((address1==tag1Compare1) && (address2==tag1Compare2) && (address3 == tag1Compare3) && (address4 == tag1Compare4))
   {
@@ -144,8 +138,8 @@ uint8_t index;
     distance2 = (0.899796)*pow(ratio,7.7095)+0.111;
     //not sure of accuracy but works
 
-    Serial.print("TAG1 Distance: ");
-    Serial.println(distance1);
+    Serial.print("TAG2 Distance: ");
+    Serial.println(distance2);
     Serial.print("The peerAddr: ");
     
         for (index = 0; index < 6; index++) 
@@ -171,8 +165,8 @@ uint8_t index;
     distance3 = (0.899796)*pow(ratio,7.7095)+0.111;
     //not sure of accuracy but works
 
-    Serial.print("TAG1 Distance: ");
-    Serial.println(distance1);
+    Serial.print("TAG3 Distance: ");
+    Serial.println(distance3);
     Serial.print("The peerAddr: ");
     
         for (index = 0; index < 6; index++) 
@@ -198,8 +192,8 @@ uint8_t index;
     distance4 = (0.899796)*pow(ratio,7.7095)+0.111;
     //not sure of accuracy but works
 
-    Serial.print("TAG1 Distance: ");
-    Serial.println(distance1);
+    Serial.print("TAG4 Distance: ");
+    Serial.println(distance4);
     Serial.print("The peerAddr: ");
     
         for (index = 0; index < 6; index++) 
@@ -214,26 +208,26 @@ uint8_t index;
     
     
   }
-        if ((distance1 != 0) && (distance1 <= distance2) && (distance1 <= distance3) && (distance1 <= distance4))
-      {
-        smallestDistance = distance1;
-        //talk to tag1
-      }
-      else if ((distance2 != 0) && (distance2 <= distance1) && (distance2 <= distance3) && (distance2 <= distance4))
-      {
-        smallestDistance = distance2;
-        //talk to tag2
-      }
-      else if ((distance3 != 0) && (distance3 <= distance1) && (distance3 <= distance2) && (distance3 <= distance4))
-      {
-        smallestDistance = distance3;
-        //talk to tag3
-      }
-      else if ((distance4 != 0) && (distance4 <= distance1) && (distance4 <= distance2) && (distance4 <= distance3))
-      {
-        smallestDistance = distance4;
-        //talk to tag4
-      }
+//        if ((distance1 != 0) && (distance1 <= distance2) && (distance1 <= distance3) && (distance1 <= distance4))
+//      {
+//        smallestDistance = distance1;
+//        Particle.publish("tag1",);
+//      }
+//      else if ((distance2 != 0) && (distance2 <= distance1) && (distance2 <= distance3) && (distance2 <= distance4))
+//      {
+//        smallestDistance = distance2;
+//        //talk to tag2
+//      }
+//      else if ((distance3 != 0) && (distance3 <= distance1) && (distance3 <= distance2) && (distance3 <= distance4))
+//      {
+//        smallestDistance = distance3;
+//        //talk to tag3
+//      }
+//      else if ((distance4 != 0) && (distance4 <= distance1) && (distance4 <= distance2) && (distance4 <= distance3))
+//      {
+//        smallestDistance = distance4;
+//        //talk to tag4
+//      }
 
 }
 
@@ -241,8 +235,8 @@ uint8_t index;
 void setup() {
   Serial.begin(115200);
   delay(5000);
-  Serial.println("BLE scan demo.");
-  Mesh.subscribe("argon", myHandler);
+  Serial.println("Scanning for BLE started.");
+  Particle.subscribe("argonToBeacon", myHandler); //ARGON SHOULD HAVE MATCHING EVENT STREAM NAME
   
   ble.init();
 
@@ -255,32 +249,49 @@ void setup() {
   Serial.println("BLE scan start.");
 }
 
-void myHandler(const char *event, const char *data)
+void myHandler(const char *event, const char *data) 
+//This should execute whenever any msg is received. The only message received should be from the Argon.
+//If this does not work as intended insert if statement with confirmation (==) of event name "argonToBeacon" to enter comparison
 {
-  Serial.printlnf("event=%s data=%s", event, data ? data : "NULL");
+  Serial.printlnf("Message received from Argon: %s data=%s", event, data ? data : "NULL");
   
    if ((distance1 != 0) && (distance1 <= distance2) && (distance1 <= distance3) && (distance1 <= distance4))
       {
         smallestDistance = distance1;
-        Mesh.publish("tag1", "MSG1");
+        Particle.publish("tag1", "event=%s data=%s", event, data ? data : "NULL"); //TAG SHOULD HAVE MATCHING EVENT STREAM NAME
       }
       else if ((distance2 != 0) && (distance2 <= distance1) && (distance2 <= distance3) && (distance2 <= distance4))
       {
         smallestDistance = distance2;
-        Mesh.publish("tag2", "MSG2");
+        Particle.publish("tag2", "event=%s data=%s", event, data ? data : "NULL"); //TAG SHOULD HAVE MATCHING EVENT STREAM NAME
       }
       else if ((distance3 != 0) && (distance3 <= distance1) && (distance3 <= distance2) && (distance3 <= distance4))
       {
         smallestDistance = distance3;
-        Mesh.publish("tag3", "MSG3");
+        Particle.publish("tag3", "event=%s data=%s", event, data ? data : "NULL"); //TAG SHOULD HAVE MATCHING EVENT STREAM NAME
       }
       else if ((distance4 != 0) && (distance4 <= distance1) && (distance4 <= distance2) && (distance4 <= distance3))
       {
         smallestDistance = distance4;
-        Mesh.publish("tag4", "MSG4");
+        Particle.publish("tag4", "event=%s data=%s", event, data ? data : "NULL"); //TAG SHOULD HAVE MATCHING EVENT STREAM NAME
       }
 }
+//
+//void loop() {
+//
+//}
 
-void loop() {
 
-}
+//Testing:
+//1. If tag is not on beacon's radar what will the distance be?
+//2. Check placement of comparison function if myHandler works or should be put in loop with boolean flag to activate.
+//3. Check if we need the 5000 delay in the setup or should be changed.
+//4. Check for accuracy of distance formula with real measurements to compare with.
+//5. Make sure BLE is paired with correct tag.
+//6. Check if distance should be float/double
+//7. Maybe replace comparing if statements with Math.min(*,*,*,*); for easier readability and quicker execution
+//8. Adjust scan interval
+
+
+
+
