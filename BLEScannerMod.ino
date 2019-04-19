@@ -82,10 +82,10 @@ uint8_t index;
 
     /*Find the addresses of all BLES and attach them to corresponding wearables. Note: Only Tag1 address is correct*/
     uint8_t tag1Compare1, tag1Compare2, tag1Compare3, tag1Compare4;
-    tag1Compare1 = 253;
-    tag1Compare2 = 202;
-    tag1Compare3 = 84;
-    tag1Compare4 = 176;
+    tag1Compare1 = 232;
+    tag1Compare2 = 45;
+    tag1Compare3 = 202;
+    tag1Compare4 = 113;
     uint8_t tag2Compare1, tag2Compare2, tag2Compare3, tag2Compare4;
     tag2Compare1 = 220;
     tag2Compare2 = 202;
