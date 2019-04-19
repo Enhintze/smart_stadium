@@ -113,8 +113,7 @@ uint8_t index;
     // Tag1 distance will be stored in the first index of the array.
     distance[0] = (0.899796)*pow(ratio,7.7095)+0.111;
 
-    Serial.print("TAG1 Distance: ");
-    Serial.println("%f",distance[0]);
+    Serial.print("TAG1 Distance: %f\n", distance[0]);
     Serial.print("The peerAddr: ");
     
         for (index = 0; index < 6; index++) 
@@ -139,8 +138,7 @@ uint8_t index;
     // Tag 2 distance will be placed at the second index of the distance array.
     distance[1] = (0.899796)*pow(ratio,7.7095)+0.111;
 
-    Serial.print("TAG2 Distance: ");
-    Serial.println("%f", distance[1]);
+    Serial.print("TAG2 Distance: %f\n", distance[1]);
     Serial.print("The peerAddr: ");
     
         for (index = 0; index < 6; index++) 
@@ -165,8 +163,7 @@ uint8_t index;
     // Tag 3 distance will be stored in the third index of the array.
     distance[2] = (0.899796)*pow(ratio,7.7095)+0.111;
 
-    Serial.print("TAG3 Distance: ");
-    Serial.println("%f", distance[2]);
+    Serial.print("TAG3 Distance: %f\n", distance[2]);
     Serial.print("The peerAddr: ");
     
         for (index = 0; index < 6; index++) 
@@ -191,8 +188,7 @@ uint8_t index;
     // Tag 4 distance will be stored at fourth index of the array.
     distance[3] = (0.899796)*pow(ratio,7.7095)+0.111;
 
-    Serial.print("TAG4 Distance: ");
-    Serial.println("%f", distance[3]);
+    Serial.print("TAG4 Distance: %f\n", distance[3]);
     Serial.print("The peerAddr: ");
     
         for (index = 0; index < 6; index++) 
@@ -259,12 +255,12 @@ void myHandler(const char *event, const char *data)
 	int closest_tag = 1;
 
    // Find the tag with the shortest distance from beacon.
-   for(int index; index < MAX_TAGS; index++){
+   for(int tag; tag < MAX_TAGS; tag++){
 		// If the array hasn't been filled entirely, the distance will be a NULL character, so verify we haven't reached the end.
-		if(distance[index] != NULL){
+		if(distance[tag] != NULL){
 
 			// If the loop is iterating for the first time, set the shortest distance to the first index.
-			if(index == 0){
+			if(tag == 0){
 				shortest_distance = distance[0];
 			}
 			
@@ -273,12 +269,12 @@ void myHandler(const char *event, const char *data)
 			// Note: This means that if two guards are *exactly* the same distance away from a beacon, the first guard will always be
 			// contacted to report to the incident section.
 
-			if(distance[index] < shortest_distance){
+			if(distance[tag] < shortest_distance){
 
-				shortest_distance = distance[index];
+				shortest_distance = distance[tag];
 
 				// Record the closest tagID for easy tracking.
-				closest_tag = index+1;
+				closest_tag = tag+1;
 			}
 		}
 		else{
