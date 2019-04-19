@@ -61,9 +61,9 @@ SYSTEM_MODE(SEMI_AUTOMATIC);
 #define BLE_SCAN_TYPE        0x00   // Passive scanning
 #define BLE_SCAN_INTERVAL    0x0060 // 60 ms
 #define BLE_SCAN_WINDOW      0x0030 // 30 ms
+#define MAX_TAGS			 20		// Allow for a total of 20 tags.
 
-// Allow for a total of 20 tags in mesh network.
-CONST MAX_TAGS = 20;
+// Use an array to store the distances of all tags.
 float distance[MAX_TAGS];
 
 void reportCallback(advertisementReport_t *report) {
