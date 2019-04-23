@@ -61,8 +61,8 @@ SYSTEM_MODE(AUTOMATIC);
  *           Time Range: 2.5 msec to 10240 msec
  */
 #define BLE_SCAN_TYPE        0x00   // Passive scanning
-#define BLE_SCAN_INTERVAL    0x0060 // 60 ms
-#define BLE_SCAN_WINDOW      0x0030 // 30 ms
+#define BLE_SCAN_INTERVAL    0x0500 // 60 ms
+#define BLE_SCAN_WINDOW      0x0500 // 30 ms
 #define MAX_TAGS       20   // Allow for a total of 20 tags.
 
 // Use an array to store the distances of all tags.
