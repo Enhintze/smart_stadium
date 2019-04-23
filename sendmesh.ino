@@ -10,6 +10,7 @@ bool flag = false;
 char string[1024];
 
 
+
 char array[1024];
 
 
@@ -48,28 +49,48 @@ char sendToBeacons(){
    if(array[8] == '0' || (array[8] == '1' && array[9] == '0')){
        
            Particle.publish("beacon1", str);
-           Serial.print("sent to B1");
+           Serial.print("\nsent to B1\n");
+        //   str = "";
+          emptyArray();
 
            
    }else if(array[8] == '1' || (array[8] == '2' && array[9] == '0')){
        
            Particle.publish("beacon2", str);
-           Serial.print("sent to B2");
+           Serial.print("\nsent to B2\n");
+        //   str = "";
+          emptyArray();
 
    }else if(array[8] == '2' || (array[8] == '3' && array[9] == '0')){
        
            Particle.publish("beacon3", str);
-           Serial.print("sent to B3");
+           Serial.print("\nsent to B3\n");
+        //   str = "";
+          emptyArray();
 
    }else if(array[8] == '3' || (array[8] == '4' && array[9] == '0')){
        
            Particle.publish("beacon3", str);
-           Serial.print("sent to B4");
+           Serial.print("\nsent to B4\n");
+        //   str = "";
+          emptyArray();
 
    }
    
    
+   
+   
 }
+
+void emptyArray() {
+    
+    
+    
+            for(int i = 0; i < sizeof(array); i++ ){
+            
+                array[i] = {0};
+       
+        }
     
     
 }
@@ -93,12 +114,14 @@ void loop()
     
     // printing array content!
     if (flag == true){
-         Serial.print("message received: ");
+         Serial.print("\nmessage received: ");
         for(int i = 0; i < sizeof(array); i++ ){
             if(array[i] != NULL){
                  Serial.print(array[i]);
+                 
          }
         }
+        counter = 0;
         sendToBeacons();
          flag = false;
         
@@ -108,7 +131,5 @@ void loop()
     // if no client is yet connected, check for a new connection
     client = server.available();
   }
-  
-  
   
 }
