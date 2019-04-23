@@ -295,8 +295,27 @@ void myHandler(const char *event, const char *data)
     }
    }
 
-   Particle.publish("tag%d", "Hello", closest_tag);
-   //Particle.publish("tag1","hello"); //this works
+   
+  //    Because the publish function does not allow extra parameters (like a dynamically set tagID using a variable) we will have to manually
+  // check to see which individual ID is closest. From a code-maintenance POV, this is extremely frustrating. But we can't find a way around
+  // this for the time being.
+   if (closest_tag == 1){
+    Particle.publish("tag1", "Section 11");
+   }
+   else if(closest_tag == 2){
+    Particle.publish("tag2", "Section 12");
+   }
+   else if(closest_tag == 3){
+    Particle.publish("tag3", "Section 13");
+   }
+   else if(closest_tag ==4){
+    Particle.publish("tag4", "Section 14");
+   }
+   // DEFAULT:
+   // If none of these tags are deemed close enough, send the information to tag1 so ~someone~ responds to the incident.
+   else{
+    Particle.publish("tag1", "Default Section");
+   }
 
    //if ((distance1 != 0) && (distance1 <= distance2) && (distance1 <= distance3) && (distance1 <= distance4))
    //   {
