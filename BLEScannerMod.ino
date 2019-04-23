@@ -41,6 +41,8 @@
 SYSTEM_MODE(SEMI_AUTOMATIC); 
 #endif
 #include <math.h>
+
+//distance = 10 * pow((txPower-RSSI)/20)
 /* 
  * BLE scan parameters:
  *     - BLE_SCAN_TYPE     
@@ -106,14 +108,15 @@ uint8_t index;
   if ((address1==tag1Compare1) && (address2==tag1Compare2) && (address3 == tag1Compare3) && (address4 == tag1Compare4))
   {
     //FOR TAG1
-    int txPower=-60;
-    int RSSI = report->rssi;
-    int ratio = (RSSI*1.0)/txPower;
-    
+    float txPower=-60;
+    float RSSI = report->rssi;
+    //int ratio = (RSSI*1.0)/txPower;
+    float raiseIt = ((txPower-RSSI)/20);
     // Tag1 distance will be stored in the first index of the array.
-    distance[0] = (0.899796)*pow(ratio,7.7095)+0.111;
+    distance[0] = pow(10,raiseIt);
 
-    Serial.print("TAG1 Distance: %f\n", distance[0]);
+    Serial.print("TAG1 Distance: ");
+    Serial.println(distance[0]);
     Serial.print("The peerAddr: ");
     
         for (index = 0; index < 6; index++) 
@@ -130,15 +133,18 @@ uint8_t index;
   }
     if ((address1==tag2Compare1) && (address2==tag2Compare2) && (address3 == tag2Compare3) && (address4 == tag2Compare4))
   {
-    //FOR TAG2
-    int txPower=-60;
-    int RSSI = report->rssi;
-    int ratio = (RSSI*1.0)/txPower;
+    
+    float txPower=-60;
+    float RSSI = report->rssi;
+    //int ratio = (RSSI*1.0)/txPower;
+    float raiseIt = ((txPower-RSSI)/20);
+    
     
     // Tag 2 distance will be placed at the second index of the distance array.
-    distance[1] = (0.899796)*pow(ratio,7.7095)+0.111;
+    distance[1] = pow(10,raiseIt);
 
-    Serial.print("TAG2 Distance: %f\n", distance[1]);
+    Serial.print("TAG2 Distance: ");
+    Serial.println(distance[1]);
     Serial.print("The peerAddr: ");
     
         for (index = 0; index < 6; index++) 
@@ -154,16 +160,19 @@ uint8_t index;
     
   }
     if ((address1==tag3Compare1) && (address2==tag3Compare2) && (address3 == tag3Compare3) && (address4 == tag3Compare4))
-  {
-    //FOR TAG3
-    int txPower=-60;
-    int RSSI = report->rssi;
-    int ratio = (RSSI*1.0)/txPower;
+  { 
     
-    // Tag 3 distance will be stored in the third index of the array.
-    distance[2] = (0.899796)*pow(ratio,7.7095)+0.111;
+    float txPower=-60;
+    float RSSI = report->rssi;
+    //int ratio = (RSSI*1.0)/txPower;
+    float raiseIt = ((txPower-RSSI)/20);
+    
+    
+    // Tag 2 distance will be placed at the second index of the distance array.
+    distance[2] = pow(10,raiseIt);
 
-    Serial.print("TAG3 Distance: %f\n", distance[2]);
+    Serial.print("TAG3 Distance:");
+    Serial.println(distance[2]);
     Serial.print("The peerAddr: ");
     
         for (index = 0; index < 6; index++) 
@@ -180,15 +189,18 @@ uint8_t index;
   }
     if ((address1==tag4Compare1) && (address2==tag4Compare2) && (address3 == tag4Compare3) && (address4 == tag4Compare4))
   {
-    //FOR TAG4
-    int txPower=-60;
-    int RSSI = report->rssi;
-    int ratio = (RSSI*1.0)/txPower;
     
-    // Tag 4 distance will be stored at fourth index of the array.
-    distance[3] = (0.899796)*pow(ratio,7.7095)+0.111;
+    float txPower=-60;
+    float RSSI = report->rssi;
+    //int ratio = (RSSI*1.0)/txPower;
+    float raiseIt = ((txPower-RSSI)/20);
+    
+    
+    // Tag 2 distance will be placed at the second index of the distance array.
+    distance[3] = pow(10,raiseIt);
 
-    Serial.print("TAG4 Distance: %f\n", distance[3]);
+    Serial.print("TAG4 Distance:" );
+    Serial.println(distance[3]);
     Serial.print("The peerAddr: ");
     
         for (index = 0; index < 6; index++) 
@@ -231,7 +243,7 @@ void setup() {
   Serial.begin(115200);
   delay(5000);
   Serial.println("Scanning for BLE started.");
-  Particle.subscribe("argonToBeacon1", myHandler); //ARGON SHOULD MATCH EVENT NAME. This event name is only for Beacon1. 
+  Particle.subscribe("beacon1", myHandler); //ARGON SHOULD MATCH EVENT NAME. This event name and code is only for Beacon1. 
   
   ble.init();
 
@@ -283,8 +295,8 @@ void myHandler(const char *event, const char *data)
 		}
    }
 
-   Particle.publish("tag%d", "event=%s data=%s", closest_tag, event, data ? data: "NULL");
-
+   Particle.publish("tag%d", "Hello", closest_tag);
+   //Particle.publish("tag1","hello"); //this works
 
    //if ((distance1 != 0) && (distance1 <= distance2) && (distance1 <= distance3) && (distance1 <= distance4))
    //   {
@@ -324,5 +336,23 @@ void myHandler(const char *event, const char *data)
 //8. Adjust scan interval
 
 
+/*#include <stdio.h>
+int main()
+{
 
+float distance;
+float avgDistance[4];
+float disAvg[4];
+float average =0;
 
+for (int i=0;i<4;i++)
+{
+//printf("enter value: ");
+//scanf("%f",distance);
+disAvg[i]=distance;
+average += disAvg[i];
+}
+
+average = average / 5;
+printf("%f",average);
+}*/
