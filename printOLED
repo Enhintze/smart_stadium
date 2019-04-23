@@ -1,0 +1,24 @@
+// This #include statement was automatically added by the Particle IDE.
+#include <oled-wing-adafruit.h>
+
+#include "oled-wing-adafruit.h"
+
+OledWingAdafruit display;
+
+void setup() {
+	display.setup();
+
+	display.clearDisplay();
+	display.display();
+}
+
+void loop() {
+        display.loop();
+		display.clearDisplay();
+		display.setTextSize(1);
+		display.setTextColor(WHITE);
+		display.setCursor(0,0);
+		display.println("BenchmarkSmartStadium");
+		display.display();
+}
+
