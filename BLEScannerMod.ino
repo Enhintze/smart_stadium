@@ -41,8 +41,6 @@
 SYSTEM_MODE(SEMI_AUTOMATIC); 
 #endif
 #include <math.h>
-
-//distance = 10 * pow((txPower-RSSI)/20)
 /* 
  * BLE scan parameters:
  *     - BLE_SCAN_TYPE     
@@ -63,11 +61,15 @@ SYSTEM_MODE(SEMI_AUTOMATIC);
 #define BLE_SCAN_TYPE        0x00   // Passive scanning
 #define BLE_SCAN_INTERVAL    0x0060 // 60 ms
 #define BLE_SCAN_WINDOW      0x0030 // 30 ms
-#define MAX_TAGS			 20		// Allow for a total of 20 tags.
-
-// Use an array to store the distances of all tags.
-float distance[MAX_TAGS];
-
+int distance1; int distance2; int distance3; int distance4; int smallestDistance;
+/*
+ * Advertising Event Type:
+ *     - (0x00)BLE_GAP_ADV_TYPE_ADV_IND          : Connectable undirected.
+ *     - (0x01)BLE_GAP_ADV_TYPE_ADV_DIRECT_IND   : Connectable directed.
+ *     - (0x02)BLE_GAP_ADV_TYPE_ADV_SCAN_IND     : Scannable undirected.
+ *     - (0x03)BLE_GAP_ADV_TYPE_ADV_NONCONN_IND  : Non connectable undirected.
+ *     - (0x04)BLE_GAP_ADV_TYPE_SCAN_RSP         : Scan response.
+ */
 void reportCallback(advertisementReport_t *report) {
 uint8_t index;
 //  int* saveAdd; 
@@ -82,41 +84,42 @@ uint8_t index;
     address3 = report->peerAddr[2];
     address4 = report->peerAddr[3];
 
-    /*Find the addresses of all BLES and attach them to corresponding wearables. Note: Only Tag1 address is correct*/
+    /*Find the addresses of all BLES and attach them to corresponding wearables*/
     uint8_t tag1Compare1, tag1Compare2, tag1Compare3, tag1Compare4;
     tag1Compare1 = 232;
     tag1Compare2 = 45;
     tag1Compare3 = 202;
     tag1Compare4 = 113;
     uint8_t tag2Compare1, tag2Compare2, tag2Compare3, tag2Compare4;
-    tag2Compare1 = 220;
-    tag2Compare2 = 202;
-    tag2Compare3 = 241;
-    tag2Compare4 = 200;
+    tag1Compare1 = 220;
+    tag1Compare2 = 202;
+    tag1Compare3 = 241;
+    tag1Compare4 = 200;
     uint8_t tag3Compare1, tag3Compare2, tag3Compare3, tag3Compare4;
-    tag3Compare1 = 0;
-    tag3Compare2 = 0;
-    tag3Compare3 = 0;
-    tag3Compare4 = 0;
+    tag1Compare1 = 0;
+    tag1Compare2 = 0;
+    tag1Compare3 = 0;
+    tag1Compare4 = 0;
     uint8_t tag4Compare1, tag4Compare2, tag4Compare3, tag4Compare4;
-    tag4Compare1 = 0;
-    tag4Compare2 = 0;
-    tag4Compare3 = 0;
-    tag4Compare4 = 0;
+    tag1Compare1 = 0;
+    tag1Compare2 = 0;
+    tag1Compare3 = 0;
+    tag1Compare4 = 0;
    
     
   if ((address1==tag1Compare1) && (address2==tag1Compare2) && (address3 == tag1Compare3) && (address4 == tag1Compare4))
   {
     //FOR TAG1
-    float txPower=-60;
-    float RSSI = report->rssi;
-    //int ratio = (RSSI*1.0)/txPower;
-    float raiseIt = ((txPower-RSSI)/20);
-    // Tag1 distance will be stored in the first index of the array.
-    distance[0] = pow(10,raiseIt);
+    int txPower=-60;
+    int RSSI = report->rssi;
+    int ratio = (RSSI*1.0)/txPower;
+    
+    
+    distance1 = (0.899796)*pow(ratio,7.7095)+0.111;
+    //not sure of accuracy but works
 
     Serial.print("TAG1 Distance: ");
-    Serial.println(distance[0]);
+    Serial.println(distance1);
     Serial.print("The peerAddr: ");
     
         for (index = 0; index < 6; index++) 
@@ -126,25 +129,24 @@ uint8_t index;
         }
         
     Serial.print("\nThe rssi: ");
-    Serial.println(report->rssi);
+    Serial.println(report->rssi); //insert conversion formula to convert RSSI to meters.
     Serial.println();
     
     
   }
     if ((address1==tag2Compare1) && (address2==tag2Compare2) && (address3 == tag2Compare3) && (address4 == tag2Compare4))
   {
+    //FOR TAG2
+    int txPower=-60;
+    int RSSI = report->rssi;
+    int ratio = (RSSI*1.0)/txPower;
     
-    float txPower=-60;
-    float RSSI = report->rssi;
-    //int ratio = (RSSI*1.0)/txPower;
-    float raiseIt = ((txPower-RSSI)/20);
     
-    
-    // Tag 2 distance will be placed at the second index of the distance array.
-    distance[1] = pow(10,raiseIt);
+    distance2 = (0.899796)*pow(ratio,7.7095)+0.111;
+    //not sure of accuracy but works
 
     Serial.print("TAG2 Distance: ");
-    Serial.println(distance[1]);
+    Serial.println(distance2);
     Serial.print("The peerAddr: ");
     
         for (index = 0; index < 6; index++) 
@@ -154,25 +156,24 @@ uint8_t index;
         }
         
     Serial.print("\nThe rssi: ");
-    Serial.println(report->rssi);
+    Serial.println(report->rssi); //insert conversion formula to convert RSSI to meters.
     Serial.println();
     
     
   }
     if ((address1==tag3Compare1) && (address2==tag3Compare2) && (address3 == tag3Compare3) && (address4 == tag3Compare4))
-  { 
+  {
+    //FOR TAG3
+    int txPower=-60;
+    int RSSI = report->rssi;
+    int ratio = (RSSI*1.0)/txPower;
     
-    float txPower=-60;
-    float RSSI = report->rssi;
-    //int ratio = (RSSI*1.0)/txPower;
-    float raiseIt = ((txPower-RSSI)/20);
     
-    
-    // Tag 2 distance will be placed at the second index of the distance array.
-    distance[2] = pow(10,raiseIt);
+    distance3 = (0.899796)*pow(ratio,7.7095)+0.111;
+    //not sure of accuracy but works
 
-    Serial.print("TAG3 Distance:");
-    Serial.println(distance[2]);
+    Serial.print("TAG3 Distance: ");
+    Serial.println(distance3);
     Serial.print("The peerAddr: ");
     
         for (index = 0; index < 6; index++) 
@@ -182,25 +183,24 @@ uint8_t index;
         }
         
     Serial.print("\nThe rssi: ");
-    Serial.println(report->rssi);
+    Serial.println(report->rssi); //insert conversion formula to convert RSSI to meters.
     Serial.println();
     
     
   }
     if ((address1==tag4Compare1) && (address2==tag4Compare2) && (address3 == tag4Compare3) && (address4 == tag4Compare4))
   {
+    //FOR TAG4
+    int txPower=-60;
+    int RSSI = report->rssi;
+    int ratio = (RSSI*1.0)/txPower;
     
-    float txPower=-60;
-    float RSSI = report->rssi;
-    //int ratio = (RSSI*1.0)/txPower;
-    float raiseIt = ((txPower-RSSI)/20);
     
-    
-    // Tag 2 distance will be placed at the second index of the distance array.
-    distance[3] = pow(10,raiseIt);
+    distance4 = (0.899796)*pow(ratio,7.7095)+0.111;
+    //not sure of accuracy but works
 
-    Serial.print("TAG4 Distance:" );
-    Serial.println(distance[3]);
+    Serial.print("TAG4 Distance: ");
+    Serial.println(distance4);
     Serial.print("The peerAddr: ");
     
         for (index = 0; index < 6; index++) 
@@ -210,7 +210,7 @@ uint8_t index;
         }
         
     Serial.print("\nThe rssi: ");
-    Serial.println(report->rssi);
+    Serial.println(report->rssi); //insert conversion formula to convert RSSI to meters.
     Serial.println();
     
     
@@ -243,7 +243,7 @@ void setup() {
   Serial.begin(115200);
   delay(5000);
   Serial.println("Scanning for BLE started.");
-  Particle.subscribe("beacon1", myHandler); //ARGON SHOULD MATCH EVENT NAME. This event name and code is only for Beacon1. 
+  Particle.subscribe("argonToBeacon", myHandler); //ARGON SHOULD HAVE MATCHING EVENT STREAM NAME
   
   ble.init();
 
@@ -262,62 +262,26 @@ void myHandler(const char *event, const char *data)
 {
   Serial.printlnf("Message received from Argon: %s data=%s", event, data ? data : "NULL");
   
-	// Every time the message is sent, calculate a new shortest distance and closest tag. Default to the first tag.
-	float shortest_distance = 0;
-	int closest_tag = 1;
-
-   // Find the tag with the shortest distance from beacon.
-   for(int tag; tag < MAX_TAGS; tag++){
-		// If the array hasn't been filled entirely, the distance will be a NULL character, so verify we haven't reached the end.
-		if(distance[tag] != NULL){
-
-			// If the loop is iterating for the first time, set the shortest distance to the first index.
-			if(tag == 0){
-				shortest_distance = distance[0];
-			}
-			
-
-			// Info will only be updated if the distance of the current tag is less than the distance of the previous tag.
-			// Note: This means that if two guards are *exactly* the same distance away from a beacon, the first guard will always be
-			// contacted to report to the incident section.
-
-			if(distance[tag] < shortest_distance){
-
-				shortest_distance = distance[tag];
-
-				// Record the closest tagID for easy tracking.
-				closest_tag = tag+1;
-			}
-		}
-		else{
-			// We have traversed the full array of distances. Break out of the for loop; the shortest distance has been set.
-			break;
-		}
-   }
-
-   Particle.publish("tag%d", "Hello", closest_tag);
-   //Particle.publish("tag1","hello"); //this works
-
-   //if ((distance1 != 0) && (distance1 <= distance2) && (distance1 <= distance3) && (distance1 <= distance4))
-   //   {
-   //     smallestDistance = distance1;
-   //     Particle.publish("tag1", "event=%s data=%s", event, data ? data : "NULL"); //TAG SHOULD HAVE MATCHING EVENT STREAM NAME
-   //   }
-   //   else if ((distance2 != 0) && (distance2 <= distance1) && (distance2 <= distance3) && (distance2 <= distance4))
-   //   {
-   //     smallestDistance = distance2;
-   //     Particle.publish("tag2", "event=%s data=%s", event, data ? data : "NULL"); //TAG SHOULD HAVE MATCHING EVENT STREAM NAME
-   //   }
-   //   else if ((distance3 != 0) && (distance3 <= distance1) && (distance3 <= distance2) && (distance3 <= distance4))
-   //   {
-   //     smallestDistance = distance3;
-   //     Particle.publish("tag3", "event=%s data=%s", event, data ? data : "NULL"); //TAG SHOULD HAVE MATCHING EVENT STREAM NAME
-   //   }
-   //   else if ((distance4 != 0) && (distance4 <= distance1) && (distance4 <= distance2) && (distance4 <= distance3))
-   //   {
-   //     smallestDistance = distance4;
-   //     Particle.publish("tag4", "event=%s data=%s", event, data ? data : "NULL"); //TAG SHOULD HAVE MATCHING EVENT STREAM NAME
-   //  }
+   if ((distance1 != 0) && (distance1 <= distance2) && (distance1 <= distance3) && (distance1 <= distance4))
+      {
+        smallestDistance = distance1;
+        Particle.publish("tag1", "you"); //TAG SHOULD HAVE MATCHING EVENT STREAM NAME
+      }
+      else if ((distance2 != 0) && (distance2 <= distance1) && (distance2 <= distance3) && (distance2 <= distance4))
+      {
+        smallestDistance = distance2;
+        //Particle.publish("tag2", "event=%s data=%s", event, data ? data : "NULL"); //TAG SHOULD HAVE MATCHING EVENT STREAM NAME
+      }
+      else if ((distance3 != 0) && (distance3 <= distance1) && (distance3 <= distance2) && (distance3 <= distance4))
+      {
+        smallestDistance = distance3;
+        //Particle.publish("tag3", "event=%s data=%s", event, data ? data : "NULL"); //TAG SHOULD HAVE MATCHING EVENT STREAM NAME
+      }
+      else if ((distance4 != 0) && (distance4 <= distance1) && (distance4 <= distance2) && (distance4 <= distance3))
+      {
+        smallestDistance = distance4;
+        //Particle.publish("tag4", "event=%s data=%s", event, data ? data : "NULL"); //TAG SHOULD HAVE MATCHING EVENT STREAM NAME
+      }
 }
 //
 //void loop() {
@@ -331,28 +295,3 @@ void myHandler(const char *event, const char *data)
 //3. Check if we need the 5000 delay in the setup or should be changed.
 //4. Check for accuracy of distance formula with real measurements to compare with.
 //5. Make sure BLE is paired with correct tag.
-//6. Check if distance should be float/double
-//7. Maybe replace comparing if statements with Math.min(*,*,*,*); for easier readability and quicker execution
-//8. Adjust scan interval
-
-
-/*#include <stdio.h>
-int main()
-{
-
-float distance;
-float avgDistance[4];
-float disAvg[4];
-float average =0;
-
-for (int i=0;i<4;i++)
-{
-//printf("enter value: ");
-//scanf("%f",distance);
-disAvg[i]=distance;
-average += disAvg[i];
-}
-
-average = average / 5;
-printf("%f",average);
-}*/
