@@ -32,10 +32,28 @@ void sendMessage(FILE *fp, int sockfd)
         }
 }
 
+void
+EchoString(int sockfd)
+{
+    ssize_t n;
+    char    line[ECHOMAX],recvline[ECHOMAX];
+
+    for ( ; ; ) {
+	    if ( (n = read(sockfd, line, ECHOMAX)) == 0 )
+   	    	return; 
+            printf("mesg = %s\n",line );
+    //fputs(recvline, stdout);
+        write(sockfd, line, n );
+    }
+}
+
+
+
 int
 main(int argc, char **argv)
 {
-	int sockfd;
+	int sockfd,sock,connfd;
+	struct sockaddr_in servaddr;
 	struct sockaddr_in servaddr;
 
 	if (argc != 3)
@@ -52,5 +70,32 @@ main(int argc, char **argv)
 
 	sendMessage(stdin, sockfd);
 
+
+
+
+
+
+
+    echoServPort = atoi(argv[1]);  
+
+    if ((sock = socket(AF_INET, SOCK_STREAM, 0)) < 0)
+        DieWithError("server: socket() failed");
+
+    memset(&echoServAddr, 0, sizeof(echoServAddr));   
+    echoServAddr.sin_family = AF_INET;                
+    echoServAddr.sin_addr.s_addr = htonl(INADDR_ANY); 
+    echoServAddr.sin_port = htons(echoServPort);      
+
+    if (bind(sock, (struct sockaddr *) &echoServAddr, sizeof(echoServAddr)) < 0)
+        DieWithError("server: bind() failed");
+  
+	if (listen(sock, BACKLOG) < 0 )
+		DieWithError("server: listen() failed");
+
+	cliAddrLen = sizeof(echoClntAddr);
+	connfd = accept( sock, (struct sockaddr *) &echoClntAddr, &cliAddrLen );
+
+	EchoString(connfd);
+	close(connfd);
 	exit(0);
 }
