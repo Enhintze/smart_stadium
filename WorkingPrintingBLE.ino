@@ -61,13 +61,23 @@ SYSTEM_MODE(AUTOMATIC); //ALERT: this should be set to automatic or code wont wo
  *           Time Range: 2.5 msec to 10240 msec
  */
 #define BLE_SCAN_TYPE        0x00   // Passive scanning
-#define BLE_SCAN_INTERVAL    0x0500 // 60 ms
-#define BLE_SCAN_WINDOW      0x0500 // 30 ms
+#define BLE_SCAN_INTERVAL    0x0200 // 60 ms
+#define BLE_SCAN_WINDOW      0x0200 // 30 ms
 #define MAX_TAGS       20   // Allow for a total of 20 tags.
 
 // Use an array to store the distances of all tags.
 float distance[MAX_TAGS];
+
 float distance1 = 50.00, distance2 = 50.00,distance3=50.00,distance4=50.00,smallestDistance;
+
+float avgDistance1 = 20.00, avgDistance2 = 20.00, avgDistance3 = 20.00, avgDistance4 = 20.00;
+
+String eventOne = "tag1tobeacon";String eventTwo = "tag2tobeacon";
+String eventThree = "tag3tobeacon"; String eventFour = "tag4tobeacon";
+//subscribe to these events in the codeForTag
+
+boolean isAvailable1 = true; boolean isAvailable2 = true;
+boolean isAvailable3 = true; boolean isAvailable4 = true;
 
 void reportCallback(advertisementReport_t *report) {
 uint8_t index;
@@ -114,9 +124,22 @@ uint8_t index;
     float raiseIt = ((txPower-RSSI)/20);
     // Tag1 distance will be stored in the first index of the array.
     distance1 = pow(10,raiseIt);
+    float distArray[4];
 
+
+    for (int i=0;i<=4;i++)
+    {
+      if (distArray[i] != distance1)
+      {
+        distArray[i]=distance1;
+      }
+      avgDistance1 += distArray[i];
+    }
+
+    avgDistance1 /=5;
+    
     Serial.print("TAG1 Distance: ");
-    Serial.println(distance1);
+    Serial.println(avgDistance1);
     Serial.print("The peerAddr: ");
     
         for (index = 0; index < 6; index++) 
@@ -141,7 +164,21 @@ uint8_t index;
     
     // Tag 2 distance will be placed at the second index of the distance array.
     distance2 = pow(10,raiseIt);
+    
+    float distArray[4];
 
+
+    for (int i=0;i<=4;i++)
+    {
+      if (distArray[i] != distance2)
+      {
+        distArray[i]=distance2;
+      }
+      avgDistance2 += distArray[i];
+    }
+
+    avgDistance2 /=5;
+    
     Serial.print("TAG2 Distance: ");
     Serial.println(distance2);
     Serial.print("The peerAddr: ");
@@ -169,6 +206,21 @@ uint8_t index;
     // Tag 2 distance will be placed at the second index of the distance array.
     distance3 = pow(10,raiseIt);
 
+    float distArray[4];
+
+
+    for (int i=0;i<=4;i++)
+    {
+      if (distArray[i] != distance3)
+      {
+        distArray[i]=distance3;
+      }
+      avgDistance3 += distArray[i];
+    }
+
+    avgDistance3 /=5;
+
+    
     Serial.print("TAG3 Distance:");
     Serial.println(distance3);
     Serial.print("The peerAddr: ");
@@ -196,6 +248,20 @@ uint8_t index;
     // Tag 2 distance will be placed at the second index of the distance array.
     distance4 = pow(10,raiseIt);
 
+    float distArray[4];
+
+
+    for (int i=0;i<=4;i++)
+    {
+      if (distArray[i] != distance4)
+      {
+        distArray[i]=distance4;
+      }
+      avgDistance4 += distArray[i];
+    }
+
+    avgDistance4 /=5;
+
     Serial.print("TAG4 Distance:" );
     Serial.println(distance4);
     Serial.print("The peerAddr: ");
@@ -218,9 +284,14 @@ uint8_t index;
 
 void setup() {
   Serial.begin(115200);
-  delay(1000);
-  Serial.println("Scanning for BLE started.");
-  Particle.subscribe("beacon1", myHandler); 
+  delay(500);
+  //Serial.println("Scanning for BLE started.");
+  Particle.subscribe("beacon1",myHandler);
+  Particle.subscribe(eventOne,myHandler);
+  Particle.subscribe(eventTwo,myHandler);
+  Particle.subscribe(eventThree,myHandler);
+  Particle.subscribe(eventFour,myHandler);
+  
   //This event name and code is only for Beacon1. 
   //Upload this code to each beacon and change event to beacon#
   
@@ -237,103 +308,64 @@ void setup() {
 
 void myHandler(const char *event, const char *data) 
 //This should execute whenever any msg is received. The only message received should be from the Argon.
-//If this does not work as intended insert if statement with confirmation (==) of event name "argonToBeacon" to enter comparison
 {
-  Serial.printlnf("Message received from Argon: %s data=%s", event, data ? data : "NULL");
+  Serial.printlnf("Message received from: %s data=%s", event, data ? data : "NULL");
 
 /*
 Comparing distance of each tag that is being scanned by the beacon.
 The closest will be chosen. The chosen tag will receive a message, print on serial, and flash its built-in led.
 */
-
-
-      if ((distance1 <= distance2) && (distance1 <= distance3) && (distance1 <= distance4))
+      if(eventOne == event)
       {
-      smallestDistance = distance1;
+        isAvailable1==true;
+      }
+      else if (eventTwo==event)
+      {
+        isAvailable2=true;
+      }
+      else if (eventThree==event)
+      {
+        isAvailable3=true;
+      }
+      else if (eventFour==event)
+      {
+        isAvailable4=true;
+      }
+
+      if ((isAvailable1==true)&&(avgDistance1 <= avgDistance2) && (avgDistance1 <= avgDistance3) && (avgDistance1 <= avgDistance4))
+      {
+      smallestDistance = avgDistance1;
+      isAvailable1=false;
       Serial.print("Closest tag is:1 Distance: ");
-      Serial.println(distance1);
+      Serial.println(avgDistance1);
       Serial.println();
       Particle.publish("tag1", data);
       }
-      else if ((distance2 <= distance1) && (distance2 <= distance3) && (distance2 <= distance4))
+      else if ((isAvailable2==true)&&(avgDistance2 <= avgDistance1) && (avgDistance2 <= avgDistance3) && (avgDistance2 <= avgDistance4))
       {
-      smallestDistance = distance2;
+      smallestDistance = avgDistance2;
+      isAvailable2=false;
       Serial.print("Closest tag is:2 Distance: ");
-      Serial.println(distance2);
+      Serial.println(avgDistance2);
       Serial.println();
       Particle.publish("tag2", data);
       }
-      else if ((distance3 <= distance1) && (distance3 <= distance2) && (distance3 <= distance4))
+      else if ((isAvailable3==true)&&(avgDistance3 <= avgDistance1) && (avgDistance3 <= avgDistance2) && (avgDistance3 <= avgDistance4))
       {
-      smallestDistance = distance3;
+      smallestDistance = avgDistance3;
+      isAvailable3=false;
       Serial.print("Closest tag is:3 Distance: ");
-      Serial.println(distance3);     
+      Serial.println(avgDistance3);     
       Serial.println(); 
       Particle.publish("tag3", data);
       }
-      else if ((distance4 <= distance1) && (distance4 <= distance2) && (distance4 <= distance3))
+      else if ((isAvailable4==true)&&(avgDistance4 <= avgDistance1) && (avgDistance4 <= avgDistance2) && (avgDistance4 <= avgDistance3))
       {
-      smallestDistance = distance4;
+      smallestDistance = avgDistance4;
+      isAvailable4=false;
       Serial.print("Closest tag is:4 Distance: ");
-      Serial.println(distance4);
+      Serial.println(avgDistance4);
       Serial.println();
       Particle.publish("tag4", data);
       }
 }
-//      
-//  // Every time the message is sent, calculate a new shortest distance and closest tag. Default to the first tag.
-//  float shortest_distance = 0;
-//  int closest_tag = 1;
-//
-//   // Find the tag with the shortest distance from beacon.
-//   for(int tag; tag < MAX_TAGS; tag++)
-//   {
-//    // If the array hasn't been filled entirely, the distance will be a NULL character, so verify we haven't reached the end.
-//    if(distance[tag] != 0.00){
-//
-//      // If the loop is iterating for the first time, set the shortest distance to the first index.
-//      if(tag == 0){
-//        shortest_distance = distance[0];
-//      }
-//      
-//
-//      // Info will only be updated if the distance of the current tag is less than the distance of the previous tag.
-//      // Note: This means that if two guards are *exactly* the same distance away from a beacon, the first guard will always be
-//      // contacted to report to the incident section.
-//
-//      if(distance[tag] < shortest_distance){
-//
-//        shortest_distance = distance[tag];
-//        
-//        // Record the closest tagID for easy tracking.
-//        closest_tag = tag+1;
-//
-//    Serial.println("The closest tag's distance is:");
-//    Serial.print(shortest_distance);
-//    Serial.println("The closest tag is: ");
-//    Serial.print(closest_tag);
-//      }
-//    }
-//   }
-//
-//   
-//  //    Because the publish function does not allow extra parameters (like a dynamically set tagID using a variable) we will have to manually
-//  // check to see which individual ID is closest. From a code-maintenance POV, this is extremely frustrating. But we can't find a way around
-//  // this for the time being.
-//   if (closest_tag == 1){
-//    Particle.publish("tag1", data ? data : "NULL");
-//   }
-//   else if(closest_tag == 2){
-//    Particle.publish("tag2", data ? data : "NULL");
-//   }
-//   else if(closest_tag == 3){
-//    Particle.publish("tag3", data ? data : "NULL");
-//   }
-//   else if(closest_tag ==4){
-//    Particle.publish("tag4", data ? data : "NULL");
-//   }
-//   // DEFAULT:
-//   // If none of these tags are deemed close enough, send the information to tag1 so ~someone~ responds to the incident.
-//   else{
-//    Particle.publish("tag1", "Default Section");
-//   }
